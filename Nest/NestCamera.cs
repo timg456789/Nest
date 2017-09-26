@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Nest
 {
-    class NestCamera
+    public class NestCamera
     {
         [JsonProperty("is_online")]
         public bool IsOnline { get; set; }

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Nest
 {
-    class EndUserAuthentication
+    public class EndUserAuthentication
     {
         [JsonProperty("access_token")]
         public string AccessToken { get; set; }

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Nest
 {
-    class EndUserAuthenticationClient
+    public class EndUserAuthenticationClient
     {
         /// <summary>
         /// 1. Send end-users to your authentication URL provided when signing up for developer program.

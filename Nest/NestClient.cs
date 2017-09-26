@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Nest
 {
-    class NestClient
+    public class NestClient
     {
         private readonly HttpClient httpClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false });
 
