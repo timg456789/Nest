@@ -49,9 +49,9 @@ The awesome thing about this is, I basically have a wifi access alarm right now 
     Actions:The actions that will occur when the alarm changes state.
 
     In ALARM:
-        Send message to topic "NestAlarm" (timg456789@yahoo.com)
+        Send message to topic "NestAlarm" (EMAIL@yahoo.com)
         Send message to topic "NestAlarm"
     In OK:
-        Send message to topic "NestAlarm" (timg456789@yahoo.com)
+        Send message to topic "NestAlarm" (EMAIL@yahoo.com)
         Send message to topic "NestAlarm"
 
