@@ -1,46 +1,57 @@
-# AWS Lambda Empty Function Project
+# Nest Camera Status Check
 
-This starter project consists of:
-* Function.cs - class file containing a class with a single function handler method
-* aws-lambda-tools-defaults.json - default argument settings for use with Visual Studio and command line deployment tools for AWS
-* project.json - .NET Core project file with build and tool declarations for the Amazon.Lambda.Tools Nuget package
+Ugh, I just realized now after unplugging the camera for an extended period of time Nest provides this functionality. I still have issues with only 30 days of data even with their subscription. I'll go after that issue next. The start is getting a snapshot every minute (although that's not too great, but it's a start at data in perpetuity)
 
-You may also have a test project depending on the options selected.
+Hah, my alarming has quicker response time being about a minute. A minute is slow as well, but that's how fast the Lambda function can be triggered by CloudWatch. I was hoping for at least 30 seconds which are the non-nest aware limits (although I don't see that being enforced, but the quality is terrible - apparently it's better if you are viewing the stream).
 
-The generated function handler is a simple method accepting a string argument that returns the uppercase equivalent of the input string. Replace the body of this method, and parameters, to suit your needs. 
+I'll have to measure and compare the response times between my alarming and the Nest app's. So far I see my alarm going off within a minute and Nest's at 10x that in 10 minutes. I will have to confirm tomorrow. The other question is, does the Nest app let you know when this is back on?
 
-## Here are some steps to follow from Visual Studio:
+The awesome thing about this is, I basically have a wifi access alarm right now that is pretty darn fast. I've seen that as a stand-alone product and was thinking I would have to set that up to see if my wifi were to go down due to jamming.
 
-To deploy your function to AWS Lambda, right click the project in Solution Explorer and select *Publish to AWS Lambda*.
+1. Authenticate with an access token set in environment variables and check all camera statuses. If there any cameras offline or not streaming, the Lambda function will throw an error.
 
-To view your deployed function open its Function View window by double-clicking the function name shown beneath the AWS Lambda node in the AWS Explorer tree.
+2. Trigger Lambda function every minute.
 
-To perform testing against your deployed function use the Test Invoke tab in the opened Function View window.
+3. Check Lambda errors and require a check-in and no errors.
 
-To configure event sources for your deployed function, for example to have your function invoked when an object is created in an Amazon S3 bucket, use the Event Sources tab in the opened Function View window.
+4. If there is no data or an error notify on status failing and again when status succeeds.
 
-To update the runtime configuration of your deployed function use the Configuration tab in the opened Function View window.
+## Lambda Deploy Setup
 
-To view execution logs of invocations of your function use the Logs tab in the opened Function View window.
+**This is gitignored, because it contains the sensitive access_token**
 
-## Here are some steps to follow to get started from the command line:
+    {
+        "Information" : [
+            "This file provides default values for the deployment wizard inside Visual Studio and the AWS Lambda commands added to the .NET Core CLI.",
+            "To learn more about the Lambda commands with the .NET Core CLI execute the following command at the command line in the project root directory.",
+            "dotnet lambda help",
+            "All the command line options for the Lambda command can be specified in this file."
+        ],
+        "profile"     : "default",
+        "region"      : "us-east-1",
+        "configuration" : "Release",
+        "framework"     : "netcoreapp1.0",
+        "function-runtime" : "dotnetcore1.0",
+        "function-memory-size" : 256,
+        "function-timeout"     : 30,
+        "function-handler"     : "Nest::Nest.Function::FunctionHandler",
+        "function-name"        : "NestStatusCheck",
+        "function-role"        : "arn:aws:iam::363557355695:role/lambda_exec_NestStatusCheck",
+        "environment-variables" : "\"access_token\"=\"REDACTED\""
+    }
 
-Once you have edited your function you can use the following command lines to build, test and deploy your function to AWS Lambda from the command line (these examples assume the project name is *EmptyFunction*):
+## Manual Alarm Setup in AWS
 
-Restore dependencies
-```
-    cd "NestLambda"
-    dotnet restore
-```
+    Threshold:The condition in which the alarm will go to the ALARM state.
 
-Execute unit tests
-```
-    cd "NestLambda/test/NestLambda.Tests"
-    dotnet test
-```
+    Errors >= 1 for 1 minute
 
-Deploy function to AWS Lambda
-```
-    cd "NestLambda/src/NestLambda"
-    dotnet lambda deploy-function
-```
+    Actions:The actions that will occur when the alarm changes state.
+
+    In ALARM:
+        Send message to topic "NestAlarm" (timg456789@yahoo.com)
+        Send message to topic "NestAlarm"
+    In OK:
+        Send message to topic "NestAlarm" (timg456789@yahoo.com)
+        Send message to topic "NestAlarm"
+
