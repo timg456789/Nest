@@ -1,25 +1,31 @@
 ﻿
-using System;
 using System.Collections.Generic;
 
 namespace Nest
 {
     public class NestCameraStatus
     {
-        public void ThrowExceptionIfAllCamerasArentOnlineAndStreaming(string endUserAccessToken)
-        {
-            var nestClient = new NestClient(endUserAccessToken);
-            List<NestCamera> cameras = nestClient.GetCameras();
 
+        public void ThrowExceptionIfAllCamerasArentOnlineAndStreaming(IList<NestCamera> cameras)
+        {
             foreach (NestCamera camera in cameras)
             {
-                if (!camera.IsOnline || !camera.IsStreaming)
-                {
-                    var msg = "The camera is either offline or isn't streaming video! Last is online change: " +
-                              camera.LastIsOnlineChange + " UTC";
-                    throw new Exception(msg);
-                }
+                ThrowExceptionIfCameraIsntOnlineAndStreaming(camera);
             }
         }
+
+        public void ThrowExceptionIfCameraIsntOnlineAndStreaming(NestCamera camera)
+        {
+            if (IsOffline(camera))
+            {
+                throw new NestCameraOfflineException(camera.LastIsOnlineChange);
+            }
+        }
+
+        public bool IsOffline(NestCamera camera)
+        {
+            return !camera.IsOnline || !camera.IsStreaming;
+        }
+
     }
 }

@@ -1,10 +1,7 @@
 
 using System;
-using System.IO;
-using System.Linq;
+using System.Collections.Generic;
 using Amazon.Lambda.Core;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
@@ -17,7 +14,11 @@ namespace Nest
         {
             string accessToken = Environment.GetEnvironmentVariable("access_token");
             var nestCameraStatus = new NestCameraStatus();
-            nestCameraStatus.ThrowExceptionIfAllCamerasArentOnlineAndStreaming(accessToken);
+
+            var nestClient = new NestClient(accessToken, new ConsoleLogger());
+            List<NestCamera> cameras  = nestClient.GetCameras();
+            nestCameraStatus.ThrowExceptionIfAllCamerasArentOnlineAndStreaming(cameras);
+
             return "Camera is online and streaming";
         }
     }

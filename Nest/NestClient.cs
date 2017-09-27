@@ -4,19 +4,22 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Xunit.Abstractions;
 
 namespace Nest
 {
     public class NestClient
     {
         private readonly HttpClient httpClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false });
+        private readonly ITestOutputHelper logger;
 
-        public NestClient(string accessToken)
+        public NestClient(string accessToken, ITestOutputHelper logger)
         {
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
             httpClient.DefaultRequestHeaders
                 .Accept
                 .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            this.logger = logger;
         }
 
         public byte[] GetSnapshotJpg(NestCamera camera)
@@ -47,7 +50,7 @@ namespace Nest
         /// </remarks>
         public JObject GetNestSummary()
         {
-            JObject nestSummary;
+            string nestSummaryResponse;
 
             HttpResponseMessage response = httpClient
                 .GetAsync("https://developer-api.nest.com")
@@ -56,14 +59,28 @@ namespace Nest
             if (response.StatusCode == HttpStatusCode.TemporaryRedirect)
             {
                 var redirectedTextResponse = httpClient.GetStringAsync(response.Headers.Location).Result;
-                nestSummary = JObject.Parse(redirectedTextResponse);
+                nestSummaryResponse = redirectedTextResponse;
             }
             else
             {
-                nestSummary = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+                nestSummaryResponse = response.Content.ReadAsStringAsync().Result;
             }
 
-            return nestSummary;
+            return GetNestSummary(nestSummaryResponse);
         }
+
+        public JObject GetNestSummary(string nestSummaryResponse)
+        {
+            try
+            {
+                return JObject.Parse(nestSummaryResponse);
+            }
+            catch (JsonReaderException)
+            {
+                logger.WriteLine("Failed to parse: " + nestSummaryResponse);
+                throw;
+            }
+        }
+
     }
 }
