@@ -32,7 +32,7 @@ I'm having some issues with false alarms. I'm sporadically seeing non-json respo
         "framework"     : "netcoreapp1.0",
         "function-runtime" : "dotnetcore1.0",
         "function-memory-size" : 256,
-        "function-timeout"     : 30,
+        "function-timeout"     : 60,
         "function-handler"     : "Nest::Nest.Function::FunctionHandler",
         "function-name"        : "NestStatusCheck",
         "function-role"        : "arn:aws:iam::363557355695:role/lambda_exec_NestStatusCheck",

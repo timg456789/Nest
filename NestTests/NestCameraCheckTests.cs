@@ -51,7 +51,7 @@ namespace NestTests
             var nestSummary = "not json";
             Assert.Throws<JsonReaderException>(() => nestClient.GetNestSummary(nestSummary));
 
-            Assert.True(listLogger.log.Count(x => x.Equals("Failed to parse: " + nestSummary)) == 1);
+            Assert.True(listLogger.log.Count(x => x.Equals("Parsing: " + nestSummary)) == 1);
         }
 
         [Fact]

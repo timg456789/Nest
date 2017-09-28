@@ -71,15 +71,8 @@ namespace Nest
 
         public JObject GetNestSummary(string nestSummaryResponse)
         {
-            try
-            {
-                return JObject.Parse(nestSummaryResponse);
-            }
-            catch (JsonReaderException)
-            {
-                logger.WriteLine("Failed to parse: " + nestSummaryResponse);
-                throw;
-            }
+            logger.WriteLine("Parsing: " + nestSummaryResponse);
+            return JObject.Parse(nestSummaryResponse);
         }
 
     }
