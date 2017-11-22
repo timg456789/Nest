@@ -42,7 +42,7 @@ namespace Nest
                     };
                     var s3Client = new AmazonS3Client(new AmazonS3Config {RegionEndpoint = RegionEndpoint.USEast1});
                     PutObjectResponse putResult = s3Client.PutObjectAsync(request).Result;
-                    savedImages.Add($"status{(int)putResult.HttpStatusCode} bucket {s3Bucket}{key}");
+                    savedImages.Add($"status {(int)putResult.HttpStatusCode} bucket {s3Bucket}{key}");
                 }
             }
 
