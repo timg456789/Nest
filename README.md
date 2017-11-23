@@ -1,6 +1,41 @@
 # Nest Camera Status Check
 
-Using a CloudWatch alaram, verify that all cameras for an account are online and streaming. The alarm is triggered in one to two minutes.
+## Snapshot Image Limits
+
+[10/minute for cameras that have a Nest Aware subscription](https://developers.nest.com/documentation/cloud/camera-guide)
+
+Here's what I need to do to get 10 images a minute. The lowest time allowed by a CloudWatch scheduled event is one minute. I need one second. This requires a constantly running task, which isn't suited for AWS Lambda.
+
+    TimeSpan waitTime = 1s;
+    TimeSpan currentWaitTime = 0s;
+    TimeSpan waitTimeReset = 60s;
+    
+	while (true)
+	{
+		foreach(setting in settings)
+		{
+			currentWaitTime += waitTime;
+			if (currentWaitTime == setting.frequency)
+			{
+				setting.Lambda.InvokeAsync();
+			}
+		}
+		Thread.Sleep(waitTime);
+		if (waitTime == waitTimeReset)
+		{
+			waitTime = 0s;
+		}
+	}
+
+	new Settings
+	{
+		TimeSpan Frequency = 6s;
+		AmazonLambdaClient Lambda = new AmazonLambdaClient()
+	}
+
+Finally I have beaten the one minute cron job limit for Linux/Lambda. Which is a step ahead of Windows 5 minute limit for scheduled tasks.
+
+This seems pretty nifty actually and should be in a project of its own. Or just bundle it, either way the biggest concern is cost... Not sure what to do there.
 
 ## Lambda Deploy Setup
 
