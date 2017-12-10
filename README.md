@@ -1,65 +1,16 @@
 # Nest Camera Status Check
 
+Every minute assert that all cameras are online and stream. Then take a snapshot and upload to s3. Images are encrypted using AWS KMS via the bucket config. Use a CloudWatch alarm to verify the nest system is online with a two minute delay.
+
 ## Snapshot Image Limits
 
 [10/minute for cameras that have a Nest Aware subscription](https://developers.nest.com/documentation/cloud/camera-guide)
 
-Here's what I need to do to get 10 images a minute. The lowest time allowed by a CloudWatch scheduled event is one minute. I need one second. This requires a constantly running task, which isn't suited for AWS Lambda.
+## Lambda Deploy
 
-    TimeSpan waitTime = 1s;
-    TimeSpan currentWaitTime = 0s;
-    TimeSpan waitTimeReset = 60s;
-    
-	while (true)
-	{
-		foreach(setting in settings)
-		{
-			currentWaitTime += waitTime;
-			if (currentWaitTime == setting.frequency)
-			{
-				setting.Lambda.InvokeAsync();
-			}
-		}
-		Thread.Sleep(waitTime);
-		if (waitTime == waitTimeReset)
-		{
-			waitTime = 0s;
-		}
-	}
+Deployment is done from Memex project.
 
-	new Settings
-	{
-		TimeSpan Frequency = 6s;
-		AmazonLambdaClient Lambda = new AmazonLambdaClient()
-	}
-
-Finally I have beaten the one minute cron job limit for Linux/Lambda. Which is a step ahead of Windows 5 minute limit for scheduled tasks.
-
-This seems pretty nifty actually and should be in a project of its own. Or just bundle it, either way the biggest concern is cost... Not sure what to do there.
-
-## Lambda Deploy Setup
-
-**This is gitignored, because it contains the sensitive access_token**
-
-    {
-        "Information" : [
-            "This file provides default values for the deployment wizard inside Visual Studio and the AWS Lambda commands added to the .NET Core CLI.",
-            "To learn more about the Lambda commands with the .NET Core CLI execute the following command at the command line in the project root directory.",
-            "dotnet lambda help",
-            "All the command line options for the Lambda command can be specified in this file."
-        ],
-        "profile"     : "default",
-        "region"      : "us-east-1",
-        "configuration" : "Release",
-        "framework"     : "netcoreapp1.0",
-        "function-runtime" : "dotnetcore1.0",
-        "function-memory-size" : 256,
-        "function-timeout"     : 90,
-        "function-handler"     : "Nest::Nest.Function::FunctionHandler",
-        "function-name"        : "NestStatusCheck",
-        "function-role"        : "arn:aws:iam::363557355695:role/lambda_exec_NestStatusCheck",
-        "environment-variables" : "\"access_token\"=\"REDACTED\""
-    }
+### Frequency one minute
 
 ## Manual Alarm Setup in AWS
 
@@ -70,10 +21,10 @@ This seems pretty nifty actually and should be in a project of its own. Or just 
     Actions:The actions that will occur when the alarm changes state.
 
     In ALARM:
-        Send message to topic "NestAlarm" (EMAIL@yahoo.com)
+        Send message to topic "NestAlarm" EMAIL
         Send message to topic "NestAlarm"
     In OK:
-        Send message to topic "NestAlarm" (EMAIL@yahoo.com)
+        Send message to topic "NestAlarm" EMAIL
         Send message to topic "NestAlarm"
 
 ## Nest Response
