@@ -6,6 +6,7 @@ using Amazon;
 using Amazon.Lambda.Core;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Newtonsoft.Json.Linq;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
@@ -14,8 +15,9 @@ namespace Nest
 {
     public class Function
     {
-        public string FunctionHandler(ILambdaContext context)
+        public string FunctionHandler(JObject sourceEvent, ILambdaContext context)
         {
+            Console.WriteLine("Event: " + sourceEvent);
             string accessToken = Environment.GetEnvironmentVariable("access_token");
             string s3Bucket = Environment.GetEnvironmentVariable("s3Bucket");
             string s3Key = Environment.GetEnvironmentVariable("s3Key");

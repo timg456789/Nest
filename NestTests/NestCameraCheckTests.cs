@@ -38,7 +38,7 @@ namespace NestTests
 
             var context = new TestLambdaContext();
             var function = new Function();
-            var cameraStatusConfirmation = function.FunctionHandler(context);
+            var cameraStatusConfirmation = function.FunctionHandler(new JObject(), context);
             Assert.Equal("Camera is online and streaming", cameraStatusConfirmation);
         }
 
