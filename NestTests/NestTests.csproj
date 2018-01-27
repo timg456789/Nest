@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nest\NestTools.csproj" />
+    <ProjectReference Include="..\NestTools\NestTools.csproj" />
   </ItemGroup>
 
 </Project>

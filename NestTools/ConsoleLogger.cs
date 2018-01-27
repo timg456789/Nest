@@ -1,7 +1,7 @@
 ﻿using System;
 using Xunit.Abstractions;
 
-namespace Nest
+namespace NestTools
 {
     class ConsoleLogger : ITestOutputHelper
     {

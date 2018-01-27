@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Nest.Models
+namespace NestTools.Models
 {
     public class NestStructureJson
     {

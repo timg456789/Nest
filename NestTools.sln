@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nest", "Nest\NestTools.csproj", "{CD443CE3-298F-4708-8712-C1FA56048811}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NestTools", "NestTools\NestTools.csproj", "{CD443CE3-298F-4708-8712-C1FA56048811}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NestTests", "NestTests\NestTests.csproj", "{F400BD83-D82B-44E5-B187-BBFED25F52DE}"
 EndProject

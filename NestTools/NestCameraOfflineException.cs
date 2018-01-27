@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nest
+namespace NestTools
 {
     public class NestCameraOfflineException : Exception
     {

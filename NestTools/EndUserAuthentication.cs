@@ -1,7 +1,7 @@
 ﻿
 using Newtonsoft.Json;
 
-namespace Nest
+namespace NestTools
 {
     public class EndUserAuthentication
     {

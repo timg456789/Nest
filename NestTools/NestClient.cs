@@ -2,12 +2,12 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Nest.Models;
+using NestTools.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit.Abstractions;
 
-namespace Nest
+namespace NestTools
 {
     public class NestClient
     {

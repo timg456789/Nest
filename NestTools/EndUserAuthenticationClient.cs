@@ -2,7 +2,7 @@
 using System.Net.Http;
 using Newtonsoft.Json;
 
-namespace Nest
+namespace NestTools
 {
     public class EndUserAuthenticationClient
     {

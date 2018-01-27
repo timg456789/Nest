@@ -1,8 +1,8 @@
 ﻿
 using System.Collections.Generic;
-using Nest.Models;
+using NestTools.Models;
 
-namespace Nest
+namespace NestTools
 {
     public class NestCameraStatus
     {
