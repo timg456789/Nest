@@ -1,30 +1,31 @@
 ﻿
 using System.Collections.Generic;
+using Nest.Models;
 
 namespace Nest
 {
     public class NestCameraStatus
     {
 
-        public void ThrowExceptionIfAllCamerasArentOnlineAndStreaming(IList<NestCamera> cameras)
+        public void ThrowExceptionIfAllCamerasArentOnlineAndStreaming(IList<NestCameraJson> cameras)
         {
-            foreach (NestCamera camera in cameras)
+            foreach (NestCameraJson camera in cameras)
             {
                 ThrowExceptionIfCameraIsntOnlineAndStreaming(camera);
             }
         }
 
-        public void ThrowExceptionIfCameraIsntOnlineAndStreaming(NestCamera camera)
+        public void ThrowExceptionIfCameraIsntOnlineAndStreaming(NestCameraJson cameraJson)
         {
-            if (IsOffline(camera))
+            if (IsOffline(cameraJson))
             {
-                throw new NestCameraOfflineException(camera.LastIsOnlineChange);
+                throw new NestCameraOfflineException(cameraJson.LastIsOnlineChange);
             }
         }
 
-        public bool IsOffline(NestCamera camera)
+        public bool IsOffline(NestCameraJson cameraJson)
         {
-            return !camera.IsOnline || !camera.IsStreaming;
+            return !cameraJson.IsOnline || !cameraJson.IsStreaming;
         }
 
     }

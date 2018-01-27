@@ -1,45 +1,55 @@
 using System;
-using System.IO;
 using System.Linq;
-using Nest;
 using Xunit;
 using Amazon.Lambda.TestUtilities;
+using Nest;
+using Nest.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Xunit.Abstractions;
 using Assert = Xunit.Assert;
 
 namespace NestTests
 {
     public class NestCameraCheckTests
     {
-        private void SetEnvironmentVariableFromLambdaDeploySettings()
+
+        private ITestOutputHelper output;
+        private PrivateConfig config = PrivateConfig.CreateFromPersonalJson();
+
+        public NestCameraCheckTests(ITestOutputHelper output)
         {
-            using (var file = File.OpenText("C:\\Users\\peon\\Desktop\\projects\\Nest\\Nest\\aws-lambda-tools-defaults.json")) // Lamda deploy environment variables.
-            {
-                var reader = new JsonTextReader(file);
-                var jObject = JObject.Load(reader);
+            this.output = output;
+            Environment.SetEnvironmentVariable("access_token", config.NestDecryptedAccessToken);
+            Environment.SetEnvironmentVariable("s3Bucket", config.NestS3Bucket);
+            Environment.SetEnvironmentVariable("s3Key", config.NestS3Key);
+        }
 
-                string environmentVariables = jObject.Value<string>("environment-variables");
-                string[] splitVars = environmentVariables.Split('=');
+        [Fact]
+        public void GetHomeOrAwayStatus()
+        {
+            var listLogger = new ListLogger();
 
-                for (var ct = 0; ct < splitVars.Length; ct += 2)
-                {
-                    var unquotedName = splitVars[ct].Substring(1, splitVars[ct].Length - 2);
-                    var unquotedValue = splitVars[ct + 1].Substring(1, splitVars[ct + 1].Length - 2);
-                    Environment.SetEnvironmentVariable(unquotedName, unquotedValue);
-                }
-            }
+            var nestClient = new NestClient(config.NestDecryptedAccessToken, listLogger);
+
+            var homeStatus = nestClient
+                .GetStructures()
+                .Single(x => x.Name.Equals("home", StringComparison.OrdinalIgnoreCase)).Away;
+
+            output.WriteLine(homeStatus);
+
+            Assert.True(homeStatus.Equals("home", StringComparison.OrdinalIgnoreCase) ||
+                        homeStatus.Equals("away", StringComparison.OrdinalIgnoreCase));
         }
 
         [Fact]
         public void Camera_Online_Message_Returned_With_Valid_Token_And_Streaming_Camera()
         {
-            SetEnvironmentVariableFromLambdaDeploySettings();
 
             var context = new TestLambdaContext();
             var function = new Function();
             var cameraStatusConfirmation = function.FunctionHandler(new JObject(), context);
-            Assert.Equal("Camera is online and streaming", cameraStatusConfirmation);
+            Assert.StartsWith("Camera is online and streaming. Snapshot saved status 200 bucket tgonzalez-nest", cameraStatusConfirmation);
         }
 
         [Fact]
@@ -59,21 +69,21 @@ namespace NestTests
         {
             var cameraStatus = new NestCameraStatus();
             Assert.Throws<NestCameraOfflineException>(() =>
-                cameraStatus.ThrowExceptionIfCameraIsntOnlineAndStreaming(new NestCamera()));
+                cameraStatus.ThrowExceptionIfCameraIsntOnlineAndStreaming(new NestCameraJson()));
 
             Assert.Throws<NestCameraOfflineException>(() =>
-                cameraStatus.ThrowExceptionIfCameraIsntOnlineAndStreaming(new NestCamera
+                cameraStatus.ThrowExceptionIfCameraIsntOnlineAndStreaming(new NestCameraJson
                 {
                     IsOnline = true
                 }));
 
             Assert.Throws<NestCameraOfflineException>(() =>
-                cameraStatus.ThrowExceptionIfCameraIsntOnlineAndStreaming(new NestCamera
+                cameraStatus.ThrowExceptionIfCameraIsntOnlineAndStreaming(new NestCameraJson
                 {
                     IsStreaming = true // Probably isn't posible to be streaming and offline...This is a test case I can remove when I gain experience and comfort with this problem area. For now however, I'm validating the API's themselves and making no assumptions.
                 }));
 
-            var fullyOnlineCamera = new NestCamera
+            var fullyOnlineCamera = new NestCameraJson
             {
                 IsOnline = true,
                 IsStreaming = true

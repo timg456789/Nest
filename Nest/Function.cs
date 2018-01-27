@@ -6,6 +6,7 @@ using Amazon;
 using Amazon.Lambda.Core;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Nest.Models;
 using Newtonsoft.Json.Linq;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
@@ -25,7 +26,7 @@ namespace Nest
             var nestCameraStatus = new NestCameraStatus();
 
             var nestClient = new NestClient(accessToken, new ConsoleLogger());
-            List<NestCamera> cameras  = nestClient.GetCameras();
+            List<NestCameraJson> cameras  = nestClient.GetCameras();
             nestCameraStatus.ThrowExceptionIfAllCamerasArentOnlineAndStreaming(cameras);
 
             List<string> savedImages = new List<string>();

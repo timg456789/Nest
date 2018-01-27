@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using Nest.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit.Abstractions;
@@ -22,28 +23,44 @@ namespace Nest
             this.logger = logger;
         }
 
-        public byte[] GetSnapshotJpg(NestCamera camera)
+        public byte[] GetSnapshotJpg(NestCameraJson cameraJson)
         {
-            return httpClient.GetByteArrayAsync(camera.SnapshotUrl).Result;
+            return httpClient.GetByteArrayAsync(cameraJson.SnapshotUrl).Result;
         }
 
-        public List<NestCamera> GetCameras()
+        public List<NestCameraJson> GetCameras()
         {
             var summary = GetNestSummary();
             JToken devices = summary["devices"];
             var cameras = devices["cameras"].Values<JProperty>();
 
-            List<NestCamera> camerasParsed = new List<NestCamera>();
+            List<NestCameraJson> camerasParsed = new List<NestCameraJson>();
 
             foreach (var camera in cameras)
             {
                 var cameraJson = camera.Value.ToString();
-                camerasParsed.Add(JsonConvert.DeserializeObject<NestCamera>(cameraJson));
+                camerasParsed.Add(JsonConvert.DeserializeObject<NestCameraJson>(cameraJson));
             }
 
             return camerasParsed;
         }
 
+        public List<NestStructureJson> GetStructures()
+        {
+            var summary = GetNestSummary();
+
+            var structures = summary["structures"].Values<JProperty>();
+
+            List<NestStructureJson> camerasParsed = new List<NestStructureJson>();
+
+            foreach (var structure in structures)
+            {
+                camerasParsed.Add(JsonConvert.DeserializeObject<NestStructureJson>(structure.Value.ToString()));
+            }
+
+            return camerasParsed;
+        }
+        
         /// <remarks>
         /// HttpClient will not send default headers on a redirect for security reasons.
         /// Nest API requires following redirects.

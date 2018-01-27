@@ -1,9 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace Nest
+namespace Nest.Models
 {
-    public class NestCamera
+    public class NestCameraJson
     {
         [JsonProperty("is_online")]
         public bool IsOnline { get; set; }
