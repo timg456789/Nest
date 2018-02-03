@@ -45,11 +45,10 @@ namespace NestTests
         [Fact]
         public void Camera_Online_Message_Returned_With_Valid_Token_And_Streaming_Camera()
         {
-
             var context = new TestLambdaContext();
             var function = new Function();
             var cameraStatusConfirmation = function.FunctionHandler(new JObject(), context);
-            Assert.StartsWith("Camera is online and streaming. Snapshot saved status 200 bucket tgonzalez-nest", cameraStatusConfirmation);
+            Assert.StartsWith($"Camera is online and streaming. Snapshot saved status 200 bucket {config.NestS3Bucket}", cameraStatusConfirmation);
         }
 
         [Fact]
